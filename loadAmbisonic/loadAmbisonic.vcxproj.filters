@@ -342,6 +342,9 @@
     <Filter Include="local_addons\ofxAudioFile\libs">
       <UniqueIdentifier>{F7861988--C81-0-44-38-B-296-30F146C2C016}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{21646e18-7421-4cd6-a3bf-2cd95245aa17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
@@ -3563,8 +3566,25 @@
     <ClInclude Include="addons\ofxAudioFile\libs\stb_vorbis.h">
       <Filter>local_addons\ofxAudioFile\libs</Filter>
     </ClInclude>
+    <ClInclude Include="src\AppUtils.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationA.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationB.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigurationC.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\hrtf.sofa">
+      <Filter>resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

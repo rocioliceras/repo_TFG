@@ -232,6 +232,10 @@
     <ClCompile Include="addons\ofxAudioFile\src\ofxAudioFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AppUtils.hpp" />
+    <ClInclude Include="src\ConfigurationA.hpp" />
+    <ClInclude Include="src\ConfigurationB.hpp" />
+    <ClInclude Include="src\ConfigurationC.hpp" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="addons\ofxBRT\src\ofxBRT.h" />
     <ClInclude Include="addons\ofxBRT\libs\brt\include\Base\BRTManager.hpp" />
@@ -1316,6 +1320,9 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64' or '$(Configuration)|$(Platform)'=='Debug|ARM64' or '$(Configuration)|$(Platform)'=='Debug|ARM64EC'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\hrtf.sofa" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>
