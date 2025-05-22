@@ -4,3 +4,9 @@
 [submodule "loadAmbisonic/addons/ofxBRT/libs/brt"]
 	path = loadAmbisonic/addons/ofxBRT/libs/brt
 	url = https://github.com/GrupoDiana/BRTLibrary.git
+[submodule "rotation_head/addons/ofxAudioFile"]
+	path = rotation_head/addons/ofxAudioFile
+	url = https://github.com/npisanti/ofxAudioFile.git
+[submodule "rotation_head/addons/ofxBRT/libs/brt"]
+	path = rotation_head/addons/ofxBRT/libs/brt
+	url = https://github.com/GrupoDiana/BRTLibrary.git
