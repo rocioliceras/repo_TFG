@@ -226,6 +226,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CAmbisonicSoundField.hpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="addons\ofxBRT\libs\brt\test\test.cpp" />

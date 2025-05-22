@@ -13,6 +13,9 @@
     <ClCompile Include="addons\ofxAudioFile\src\ofxAudioFile.cpp">
       <Filter>local_addons\ofxAudioFile\src</Filter>
     </ClCompile>
+    <ClCompile Include="CAmbisonicSoundField.hpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
