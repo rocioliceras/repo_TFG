@@ -13,9 +13,6 @@
     <ClCompile Include="addons\ofxAudioFile\src\ofxAudioFile.cpp">
       <Filter>local_addons\ofxAudioFile\src</Filter>
     </ClCompile>
-    <ClCompile Include="CAmbisonicSoundField.hpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -3573,12 +3570,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\ConfigurationA.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ConfigurationB.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ConfigurationC.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

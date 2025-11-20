@@ -64,16 +64,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' or '$(Configuration)|$(Platform)'=='Debug|ARM64' or '$(Configuration)|$(Platform)'=='Debug|ARM64EC'">
-    <OutDir>bin\</OutDir>
+    <OutDir>bin\debug</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_debug</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64' or '$(Configuration)|$(Platform)'=='Release|ARM64' or '$(Configuration)|$(Platform)'=='Release|ARM64EC'">
-    <OutDir>bin\</OutDir>
+    <OutDir>bin\release</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(ProjectName)_release</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64' or '$(Configuration)|$(Platform)'=='Debug|ARM64' or '$(Configuration)|$(Platform)'=='Debug|ARM64EC'">
     <ClCompile>
@@ -226,7 +229,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CAmbisonicSoundField.hpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="addons\ofxBRT\libs\brt\test\test.cpp" />
@@ -235,8 +237,6 @@
   <ItemGroup>
     <ClInclude Include="src\AppUtils.hpp" />
     <ClInclude Include="src\ConfigurationA.hpp" />
-    <ClInclude Include="src\ConfigurationB.hpp" />
-    <ClInclude Include="src\ConfigurationC.hpp" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="addons\ofxBRT\src\ofxBRT.h" />
     <ClInclude Include="addons\ofxBRT\libs\brt\include\Base\BRTManager.hpp" />
