@@ -7,7 +7,7 @@ void ofApp::setup() {
 
 	/// BRT Global Parametert setup
 	globalParameters.SetSampleRate(SAMPLERATE); // Setting sample rate
-	globalParameters.SetBufferSize(256); // Setting buffer size
+	globalParameters.SetBufferSize(BUFFER_SIZE); // Setting buffer size
 
 	// //////////////////////////
 	// // Listener Setup
@@ -28,7 +28,7 @@ void ofApp::setup() {
 	/////////////////////
 	// Create Sources
 	/////////////////////
-	vertices = {{ 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 }};
+	vertices = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
 	speakers.resize(vertices.size());
 	for (size_t i = 0; i < vertices.size(); ++i) {
 		speakers[i] = CreateOmnidirectionalSoundSource(brtManager, "Speaker" + std::to_string(i));
@@ -42,15 +42,20 @@ void ofApp::setup() {
 	// Start AUDIO Render
 	/////////////////////
 	// Declaration and initialization of stereo buffer
-	outputBufferStereo.left.resize(512);
-	outputBufferStereo.right.resize(512);
+	outputBufferStereo.left.resize(BUFFER_SIZE);
+	outputBufferStereo.right.resize(BUFFER_SIZE);
+
+	// Ensure ambisonic internal buffers have initial size
+	W.resize(BUFFER_SIZE);
+	X.resize(BUFFER_SIZE);
+	Y.resize(BUFFER_SIZE);
+	Z.resize(BUFFER_SIZE);
 
 	soundStream.start();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-
 }
 
 //--------------------------------------------------------------
@@ -71,9 +76,10 @@ void ofApp::draw() {
 //--------------------------------------------------------------
 void ofApp::audioIn(ofSoundBuffer & input) {
 
-	int frames = input.getNumFrames(); 
+	int frames = input.getNumFrames();
 	int channels = input.getNumChannels();
 
+	// resize local arrays to frames
 	FLU.assign(frames, 0.0f);
 	FRD.assign(frames, 0.0f);
 	BLD.assign(frames, 0.0f);
@@ -84,39 +90,42 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 	Y.resize(frames);
 	Z.resize(frames);
 
-	float norm = 0.25f;
+	if (channels == 1) {
 
-	for (int i = 0; i < frames; i++) {
-		/* FLU[i] = input[i * channels + 0]; // entrada 1
-		FRD[i] = input[i * channels + 1]; // entrada 2
-		BLD[i] = input[i * channels + 2]; // entrada 3
-		BRU[i] = input[i * channels + 3]; // entrada 4
+		for (int i = 0; i < frames; i++) {
 
-		W[i] = (FLU[i] + FRD[i] + BLD[i] + BRU[i]) * norm;
-		X[i] = (FLU[i] + FRD[i] - BLD[i] - BRU[i]) * norm;
-		Y[i] = (-FLU[i] + FRD[i] - BLD[i] + BRU[i]) * norm;
-		Z[i] = (FLU[i] - FRD[i] - BLD[i] + BRU[i]) * norm;*/
+			float m = input[i]*20; // señal del micro único
+			FLU[i] = m; // Front-Left-Up
+			FRD[i] = m * 0.8f; // Front-Right-Down
+			BLD[i] = m * 0.6f; // Back-Left-Down
+			BRU[i] = m * 0.4f; // Back-Right-Up
+		}
 
-
-		FLU[i] = input[i]; 
-		FRD[i] = input[i];
-		BLD[i] = input[i];
-		BRU[i] = input[i];
-
-		W[i] = (FLU[i] + FRD[i] + BLD[i] + BRU[i]) ;
-		X[i] = 0.0f;
-		Y[i] = 0.0f;
-		Z[i] = 0.0f;
-
-		if (isRecording) {
-			recordBuffer.push_back(W[i]); 
+	} else {
+		for (size_t i = 0; i < frames; i++) {
+			FLU[i] = input[i * channels + 0];
+			FRD[i] = input[i * channels + 1];
+			BLD[i] = input[i * channels + 2];
+			BRU[i] = input[i * channels + 3];
 		}
 	}
 
+	for (int i = 0; i < frames; i++) {
+
+		W[i] = (FLU[i] + FRD[i] + BLD[i] + BRU[i]);
+		X[i] = (FLU[i] + FRD[i] - BLD[i] - BRU[i]);
+		Y[i] = (FLU[i] - FRD[i] + BLD[i] - BRU[i]);
+		Z[i] = (FLU[i] - FRD[i] - BLD[i] + BRU[i]);
+
+		if (isRecording) {
+			recordBuffer.push_back({ W[i], X[i], Y[i], Z[i] });
+		}
+	}
 }
 
+//--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer & buffer) {
-	unsigned int uiBufferSize = 256;
+	unsigned int uiBufferSize = BUFFER_SIZE;
 	// Setting the output buffer as float
 	std::vector<float> & bufferData = buffer.getBuffer();
 
@@ -148,24 +157,26 @@ void ofApp::audioOut(ofSoundBuffer & buffer) {
 void ofApp::audioProcess(Common::CEarPair<CMonoBuffer<float>> & bufferOutput, int bufferSize) {
 
 	if (isPlaying && !recordBuffer.empty()) {
-		for (unsigned int i = 0; i < bufferSize; i++) {
+		for (int i = 0; i < bufferSize; ++i) {
 			if (playPosition < recordBuffer.size()) {
-				float sample = recordBuffer[playPosition++];
-				outputBufferStereo.left[i] += sample;
-				outputBufferStereo.right[i] += sample;
+				const AmbiFrame & f = recordBuffer[playPosition++];
+				W[i] += f.W;
+				X[i] += f.X;
+				Y[i] += f.Y;
+				Z[i] += f.Z;
+			} else {
+				isPlaying = false;
+				playPosition = 0;
+				break;
 			}
-		}
-		// Si llegamos al final, paramos la reproducción
-		if (playPosition >= recordBuffer.size()) {
-			isPlaying = false;
-			playPosition = 0;
 		}
 	}
 
+	// Decodificar a speakers
 	DecodeToSpeakerArray(W, X, Y, Z, speakers);
 
+	// Procesar Binaural
 	Common::CEarPair<CMonoBuffer<float>> bufferProcessed;
-
 	brtManager.ProcessAll();
 	listener->GetBuffers(bufferProcessed.left, bufferProcessed.right);
 
@@ -174,33 +185,23 @@ void ofApp::audioProcess(Common::CEarPair<CMonoBuffer<float>> & bufferOutput, in
 }
 
 
+//--------------------------------------------------------------
 void ofApp::AudioSetup() {
 
 	ofSoundStreamSettings settings;
-	settings.setApi(ofSoundDevice::Api::MS_ASIO); 
-
+	settings.setApi(ofSoundDevice::Api::MS_ASIO);
 
 	// ------- SELECCIÓN DE DISPOSITIVO DE ENTRADA ------
 	ofSoundDevice device = ShowSelectAudioDeviceMenu();
 	settings.setInDevice(device);
-	settings.setOutDevice(device); 
-
-	// ----- SELECCIÓN DE DISPOSITIVO DE SALIDA ------
-	/* auto outDevices = soundStream.getMatchingDevices("Default");
-	if (!outDevices.empty()) {
-		settings.setOutDevice(outDevices[0]);
-	} else {
-		ofLogError() << "No se encontro dispositivo de entrada";
-	}*/
-
-	//settings.numInputChannels = 4;
+	settings.setOutDevice(device);
 
 	settings.numOutputChannels = 2;
-	settings.numInputChannels = 1; 
+	settings.numInputChannels = 1;
 
 	// ----------- PARÁMETROS GENERALES --------------
-	settings.sampleRate = SAMPLERATE; 
-	settings.bufferSize = 256;
+	settings.sampleRate = SAMPLERATE;
+	settings.bufferSize = BUFFER_SIZE;
 	settings.numBuffers = 2;
 
 	settings.setInListener(this);
@@ -208,12 +209,11 @@ void ofApp::AudioSetup() {
 
 	try {
 		soundStream.setup(settings);
-		soundStream.stop(); 
+		soundStream.stop();
 	} catch (const std::exception & e) {
 		std::cout << "Error al iniciar audio: " << e.what() << std::endl;
 	}
 }
-
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
@@ -242,7 +242,6 @@ void ofApp::keyPressed(int key) {
 		std::cout << "Playback stopped\n";
 	}
 }
-
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
@@ -284,7 +283,7 @@ void ofApp::gotMessage(ofMessage msg) {
 void ofApp::dragEvent(ofDragInfo dragInfo) {
 }
 
-	/// Function to show the user a menu to choose the audio output device
+/// Function to show the user a menu to choose the audio output device
 ofSoundDevice ofApp::ShowSelectAudioDeviceMenu() {
 
 	auto devices = soundStream.getDeviceList();
@@ -317,7 +316,7 @@ ofSoundDevice ofApp::ShowSelectAudioDeviceMenu() {
 	return devices[selectAudioDevice];
 }
 
-void ofApp::DecodeToSpeakerArray(const std::vector<float> & W,const std::vector<float> & X,const std::vector<float> & Y,const std::vector<float> & Z,std::vector<SourceModelPtr> & speakers) {
+void ofApp::DecodeToSpeakerArray(const std::vector<float> & W, const std::vector<float> & X, const std::vector<float> & Y, const std::vector<float> & Z, std::vector<SourceModelPtr> & speakers) {
 
 	size_t numSamples = W.size();
 	float Wgain = 1.0f / std::sqrt(speakers.size());
@@ -330,7 +329,7 @@ void ofApp::DecodeToSpeakerArray(const std::vector<float> & W,const std::vector<
 		for (size_t n = 0; n < numSamples; n++) {
 			buffer[n] = Wgain * W[n] + XYZgain * (pos.x * X[n] + pos.y * Y[n] + pos.z * Z[n]);
 		}
-
+		
 		speakers[i]->SetBuffer(buffer);
 	}
 }

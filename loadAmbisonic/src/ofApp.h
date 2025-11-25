@@ -1,11 +1,19 @@
 ﻿#pragma once
 
+#include "ConfigurationA.hpp"
 #include "ofMain.h"
 #include "ofxBRT.h"
-#include "ConfigurationA.hpp"
 
 #define SAMPLERATE 44100
+#define BUFFER_SIZE 256
 #define LISTENER_ID "listener1"
+
+struct AmbiFrame {
+	float W;
+	float X;
+	float Y;
+	float Z;
+};
 
 class ofApp : public ofBaseApp {
 
@@ -50,15 +58,14 @@ public:
 
 	Common::CGlobalParameters globalParameters;
 	BRTBase::CBRTManager brtManager;
-	std::shared_ptr<BRTBase::CListener> listener; 
-	Common::CEarPair<CMonoBuffer<float>> outputBufferStereo; 
+	std::shared_ptr<BRTBase::CListener> listener;
+	Common::CEarPair<CMonoBuffer<float>> outputBufferStereo;
 	ofSoundStream soundStream;
 
-	std::vector<float> recordBuffer; 
-	bool isRecording = false; 
+	std::vector<AmbiFrame> recordBuffer;
+	bool isRecording = false;
 	bool isPlaying = false;
-	size_t playPosition = 0; 
-
+	size_t playPosition = 0;
 
 private:
 	void setRealTimePriority() {
@@ -75,9 +82,9 @@ private:
 		return _brtSoundSource;
 	}
 
-	vector<float> FLU; 
-	vector<float> FRD; 
-	vector<float> BLD; 
+	vector<float> FLU;
+	vector<float> FRD;
+	vector<float> BLD;
 	vector<float> BRU;
 
 	vector<float> W;
@@ -87,10 +94,11 @@ private:
 
 	std::vector<float> audioInputBuffer;
 
-	void DecodeToSpeakerArray(const std::vector<float> & W,const std::vector<float> & X,const std::vector<float> & Y,const std::vector<float> & Z,std::vector<SourceModelPtr> & speakers);
+	void DecodeToSpeakerArray(const std::vector<float> & W,
+		const std::vector<float> & X,
+		const std::vector<float> & Y,
+		const std::vector<float> & Z,
+		std::vector<SourceModelPtr> & speakers);
 };
-/* FLU[i] = input[i * channels + 0]; // entrada 1
-		FRD[i] = input[i * channels + 1]; // entrada 2
-		BLD[i] = input[i * channels + 2]; // entrada 3
-		BRU[i] = input[i * channels + 3]; // entrada 4*/
+
 
