@@ -42,10 +42,6 @@ public:
 	ofSoundDevice ShowSelectAudioDeviceMenu();
 	void AudioSetup();
 
-	vector<float> FLU;
-	vector<float> FRD;
-	vector<float> BLD;
-	vector<float> BRU;
 	vector<float> volHistory;
 
 	int bufferCounter;
@@ -85,14 +81,11 @@ private:
 		return _brtSoundSource;
 	}
 
-<<<<<<< HEAD
 	vector<float> FLU;
 	vector<float> FRD;
 	vector<float> BLD;
 	vector<float> BRU;
 
-=======
->>>>>>> fad2dd9 (User interface)
 	vector<float> W;
 	vector<float> X;
 	vector<float> Y;
@@ -105,11 +98,6 @@ private:
 		const std::vector<float> & Y,
 		const std::vector<float> & Z,
 		std::vector<SourceModelPtr> & speakers);
-<<<<<<< HEAD
-};
-
-=======
->>>>>>> fad2dd9 (User interface)
 
 	// ---------------------
 	// BOTONES

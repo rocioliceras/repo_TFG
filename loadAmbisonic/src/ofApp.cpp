@@ -50,8 +50,6 @@ void ofApp::setup() {
 	X.resize(BUFFER_SIZE);
 	Y.resize(BUFFER_SIZE);
 	Z.resize(BUFFER_SIZE);
-<<<<<<< HEAD
-=======
 
 	// Inicializar botones (posiciones y tamaño)
 	btnPlay.set(32, 52, 140, 40);
@@ -69,7 +67,6 @@ void ofApp::setup() {
 	// Inicializar contadores
 	bufferCounter = 0;
 	drawCounter = 0;
->>>>>>> fad2dd9 (User interface)
 
 	soundStream.start();
 }
@@ -404,11 +401,7 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 
 		for (int i = 0; i < frames; i++) {
 
-<<<<<<< HEAD
-			float m = input[i]*20; // señal del micro único
-=======
 			float m = input[i] * 5;
->>>>>>> fad2dd9 (User interface)
 			FLU[i] = m; // Front-Left-Up
 			FRD[i] = m * 0.8f; // Front-Right-Down
 			BLD[i] = m * 0.6f; // Back-Left-Down
@@ -417,17 +410,10 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 
 	} else {
 		for (size_t i = 0; i < frames; i++) {
-<<<<<<< HEAD
-			FLU[i] = input[i * channels + 0];
-			FRD[i] = input[i * channels + 1];
-			BLD[i] = input[i * channels + 2];
-			BRU[i] = input[i * channels + 3];
-=======
 			FLU[i] = input[i * channels + 0] * 5;
 			FRD[i] = input[i * channels + 1] * 5;
 			BLD[i] = input[i * channels + 2] * 5;
 			BRU[i] = input[i * channels + 3] * 5;
->>>>>>> fad2dd9 (User interface)
 		}
 	}
 
@@ -505,26 +491,15 @@ void ofApp::audioProcess(Common::CEarPair<CMonoBuffer<float>> & bufferOutput, in
 	bufferOutput.right += bufferProcessed.right;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> fad2dd9 (User interface)
 //--------------------------------------------------------------
 void ofApp::AudioSetup() {
 
 	ofSoundStreamSettings settings;
-<<<<<<< HEAD
-	settings.setApi(ofSoundDevice::Api::MS_ASIO);
-=======
 	settings.setApi(ofSoundDevice::Api::DEFAULT);
->>>>>>> fad2dd9 (User interface)
 
 	// ------- SELECCIÓN DE DISPOSITIVO DE ENTRADA ------
 	ofSoundDevice device = ShowSelectAudioDeviceMenu();
 	settings.setInDevice(device);
-<<<<<<< HEAD
-	settings.setOutDevice(device);
-=======
 	//settings.setOutDevice(device);
 	// ----- SELECCIÓN DE DISPOSITIVO DE SALIDA ------
 	auto outDevices = soundStream.getMatchingDevices("Default");
@@ -533,7 +508,6 @@ void ofApp::AudioSetup() {
 	} else {
 		ofLogError() << "No se encontro dispositivo de entrada";
 	}
->>>>>>> fad2dd9 (User interface)
 
 	settings.numOutputChannels = 2;
 	settings.numInputChannels = 1;
@@ -730,7 +704,7 @@ void ofApp::DecodeToSpeakerArray(const std::vector<float> & W, const std::vector
 		for (size_t n = 0; n < numSamples; n++) {
 			buffer[n] = Wgain * W[n] + XYZgain * (pos.x * X[n] + pos.y * Y[n] + pos.z * Z[n]);
 		}
-		
+
 		speakers[i]->SetBuffer(buffer);
 	}
 }
