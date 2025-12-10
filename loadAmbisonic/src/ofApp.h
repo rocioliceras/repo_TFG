@@ -37,12 +37,15 @@ public:
 	void audioIn(ofSoundBuffer & input);
 	void audioOut(ofSoundBuffer & buffer);
 	void audioProcess(Common::CEarPair<CMonoBuffer<float>> & bufferOutput, int bufferSize);
+	bool SaveToWav(const std::string & filePath);
 
 	ofSoundDevice ShowSelectAudioDeviceMenu();
 	void AudioSetup();
 
-	vector<float> left;
-	vector<float> right;
+	vector<float> FLU;
+	vector<float> FRD;
+	vector<float> BLD;
+	vector<float> BRU;
 	vector<float> volHistory;
 
 	int bufferCounter;
@@ -82,11 +85,14 @@ private:
 		return _brtSoundSource;
 	}
 
+<<<<<<< HEAD
 	vector<float> FLU;
 	vector<float> FRD;
 	vector<float> BLD;
 	vector<float> BRU;
 
+=======
+>>>>>>> fad2dd9 (User interface)
 	vector<float> W;
 	vector<float> X;
 	vector<float> Y;
@@ -99,6 +105,28 @@ private:
 		const std::vector<float> & Y,
 		const std::vector<float> & Z,
 		std::vector<SourceModelPtr> & speakers);
+<<<<<<< HEAD
 };
 
+=======
+>>>>>>> fad2dd9 (User interface)
 
+	// ---------------------
+	// BOTONES
+	// ---------------------
+	ofRectangle btnPlay, btnStop, btnRec, btnStopRec, btnPlayback, btnStopPlayback;
+
+	bool hoverPlay = false, hoverStop = false, hoverRec = false;
+	bool hoverStopRec = false, hoverPlayback = false, hoverStopPlayback = false;
+
+	bool pressedPlay = false, pressedStop = false, pressedRec = false;
+	bool pressedStopRec = false, pressedPlayback = false, pressedStopPlayback = false;
+
+	// ---------------------
+	// CHECKBOX MONITOR
+	// ---------------------
+	ofRectangle chkMonitor; // caja
+	bool chkMonitorState = false; // marcado SI/NO
+	bool chkMonitorHover = false; // hover visual
+	bool chkMonitorPressed = false; // pulsación
+};

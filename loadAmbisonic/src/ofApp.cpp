@@ -50,6 +50,26 @@ void ofApp::setup() {
 	X.resize(BUFFER_SIZE);
 	Y.resize(BUFFER_SIZE);
 	Z.resize(BUFFER_SIZE);
+<<<<<<< HEAD
+=======
+
+	// Inicializar botones (posiciones y tamaño)
+	btnPlay.set(32, 52, 140, 40);
+	btnStop.set(204, 52, 140, 40);
+
+	btnRec.set(376, 52, 140, 40);
+	btnStopRec.set(548, 52, 140, 40);
+
+	btnPlayback.set(32, 112, 140, 40);
+	btnStopPlayback.set(204, 112, 140, 40);
+
+	// Checkbox MONITOR
+	chkMonitor.set(376, 112, 20, 20);
+
+	// Inicializar contadores
+	bufferCounter = 0;
+	drawCounter = 0;
+>>>>>>> fad2dd9 (User interface)
 
 	soundStream.start();
 }
@@ -60,17 +80,307 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackground(0);
-	ofSetColor(255);
 
-	ofDrawBitmapString("Press 's' to Start Audio, 'e' to Stop Audio", 20, 20);
-	ofDrawBitmapString("'r' Start Recording, 't' Stop Recording", 20, 40);
-	ofDrawBitmapString("'p' Start Playback, 'o' Stop Playback", 20, 60);
+	// Información superior
+	ofFill();
+	ofSetColor(225);
+	ofDrawBitmapString("AMBI-ALICE", 32, 32);
 
-	std::string status = "Status: ";
-	status += isRecording ? "[Recording] " : "";
-	status += isPlaying ? "[Playing] " : "";
-	ofDrawBitmapString(status, 20, 100);
+	// -------------------------------------------
+	// BOTONES ROSAS (rellenos)
+	// -------------------------------------------
+	auto drawButton = [&](ofRectangle & r, string label, bool hover, bool pressed, ofColor baseColor) {
+		ofColor c = baseColor;
+
+		if (hover && !pressed) {
+			c += ofColor(40, 40, 40); 
+		}
+
+		if (pressed) {
+			c = ofColor(255, 182, 193) ; 
+		}
+
+		ofNoFill();
+		ofSetColor(c);
+		ofDrawRectangle(r);
+
+		ofSetColor(255); 
+		ofDrawBitmapString(label, r.x + 15, r.y + 25);
+	};
+
+	ofColor pink(255, 20, 147);
+
+	drawButton(btnPlay, "START AUDIO", hoverPlay, pressedPlay, pink);
+	drawButton(btnStop, "STOP AUDIO", hoverStop, pressedStop, pink);
+
+	drawButton(btnRec, "REC", hoverRec, pressedRec, pink);
+	drawButton(btnStopRec, "STOP REC", hoverStopRec, pressedStopRec, pink);
+
+	drawButton(btnPlayback, "PLAYBACK", hoverPlayback, pressedPlayback, pink);
+	drawButton(btnStopPlayback, "STOP PLAY", hoverStopPlayback, pressedStopPlayback, pink);
+
+	//--------------------------------------
+	// CHECKBOX MONITOR
+	//--------------------------------------
+	auto drawCheckbox = [&](ofRectangle & r, bool hover, bool pressed, bool state) {
+		ofColor base(255, 20, 147);
+		ofColor c = base;
+		if (hover && !pressed) c += ofColor(40, 40, 40);
+		if (pressed) c = ofColor(255, 182, 193);
+
+		ofFill();
+		ofSetColor(c);
+		ofDrawRectangle(r);
+
+		if (state) {
+			ofSetColor(255);
+			ofDrawBitmapString("X", r.x + 4, r.y + 16);
+		}
+
+		ofSetColor(255);
+		ofDrawBitmapString("B-FORMAT", r.x + 28, r.y + 16);
+	};
+
+	drawCheckbox(chkMonitor, chkMonitorHover, chkMonitorPressed, chkMonitorState);
+	ofNoFill();
+
+	if (chkMonitorState) {
+		// draw the W channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(392 , 220, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("W", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0,320 , 100);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < W.size(); i++) {
+			ofVertex(i * 1.25, 75 - W[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the X channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(32, 370, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("X", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 320, 100);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < X.size(); i++) {
+			ofVertex(i *1.25, 75 - X[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the Y channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(392, 370, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("Y", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 320, 100);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < Y.size(); i++) {
+			ofVertex(i *1.25, 75 - Y[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the Z channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(752, 370, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("Z", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 320, 100);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < Z.size(); i++) {
+			ofVertex(i*1.25 , 75 - Z[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+	} else {
+		// draw the FRONT-LEFT-UP channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(32, 170, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("FLU Channel", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 512, 150);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < FLU.size(); i++) {
+			ofVertex(i * 2, 100 - FLU[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the BACK-LEFT-DOWN channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(32, 370, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("BLD Channel", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 512, 150);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < BLD.size(); i++) {
+			ofVertex(i * 2, 100 - BLD[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the BACK-RIGHT-UP channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(578, 170, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("BRU Channel", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 512, 150);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < BRU.size(); i++) {
+			ofVertex(i * 2, 100 - BRU[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+
+		// draw the FRONT-RIGHT-DOWN channel:
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(578, 370, 0);
+
+		ofSetColor(225);
+		ofDrawBitmapString("FRD Channel", 4, 18);
+
+		ofSetLineWidth(1);
+		ofDrawRectangle(0, 0, 512, 150);
+
+		ofSetColor(245, 58, 135);
+		ofSetLineWidth(3);
+
+		ofBeginShape();
+		for (unsigned int i = 0; i < FRD.size(); i++) {
+			ofVertex(i * 2, 100 - FRD[i] * 180.0f);
+		}
+		ofEndShape(false);
+
+		ofPopMatrix();
+		ofPopStyle();
+	}
+
+	// draw the RIGHT-STEREO channel:
+	ofPushStyle();
+	ofPushMatrix();
+	ofTranslate(478, 570, 0);
+
+	ofSetColor(225);
+	ofDrawBitmapString("Right Channel", 4, 18);
+
+	ofSetLineWidth(1);
+	ofDrawRectangle(0, 0, 264, 75);
+
+	ofSetColor(245, 58, 135);
+	ofSetLineWidth(3);
+
+	ofBeginShape();
+	for (unsigned int i = 0; i < outputBufferStereo.right.size(); i++) {
+		ofVertex(i , 50 - outputBufferStereo.right[i] * 180.0f);
+	}
+	ofEndShape(false);
+
+	ofPopMatrix();
+	ofPopStyle();
+
+	// draw the LEFT-STEREO channel:
+	ofPushStyle();
+	ofPushMatrix();
+	ofTranslate(760, 570, 0);
+
+	ofSetColor(225);
+	ofDrawBitmapString("Left Channel", 4, 18);
+
+	ofSetLineWidth(1);
+	ofDrawRectangle(0, 0, 264, 75);
+
+	ofSetColor(245, 58, 135);
+	ofSetLineWidth(3);
+
+	ofBeginShape();
+	for (unsigned int i = 0; i < outputBufferStereo.left.size(); i++) {
+		ofVertex(i , 50 - outputBufferStereo.left[i] * 180.0f);
+	}
+	ofEndShape(false);
+
+	ofPopMatrix();
+	ofPopStyle();
+
+	drawCounter++;
+
+	ofSetColor(225);
+	string reportString = "buffers received: " + ofToString(bufferCounter) + "\ndraw routines called: " + ofToString(drawCounter) + "\nticks: " + ofToString(soundStream.getTickCount());
+	ofDrawBitmapString(reportString, 32, 589);
 }
 
 //--------------------------------------------------------------
@@ -94,7 +404,11 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 
 		for (int i = 0; i < frames; i++) {
 
+<<<<<<< HEAD
 			float m = input[i]*20; // señal del micro único
+=======
+			float m = input[i] * 5;
+>>>>>>> fad2dd9 (User interface)
 			FLU[i] = m; // Front-Left-Up
 			FRD[i] = m * 0.8f; // Front-Right-Down
 			BLD[i] = m * 0.6f; // Back-Left-Down
@@ -103,10 +417,17 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 
 	} else {
 		for (size_t i = 0; i < frames; i++) {
+<<<<<<< HEAD
 			FLU[i] = input[i * channels + 0];
 			FRD[i] = input[i * channels + 1];
 			BLD[i] = input[i * channels + 2];
 			BRU[i] = input[i * channels + 3];
+=======
+			FLU[i] = input[i * channels + 0] * 5;
+			FRD[i] = input[i * channels + 1] * 5;
+			BLD[i] = input[i * channels + 2] * 5;
+			BRU[i] = input[i * channels + 3] * 5;
+>>>>>>> fad2dd9 (User interface)
 		}
 	}
 
@@ -184,17 +505,35 @@ void ofApp::audioProcess(Common::CEarPair<CMonoBuffer<float>> & bufferOutput, in
 	bufferOutput.right += bufferProcessed.right;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> fad2dd9 (User interface)
 //--------------------------------------------------------------
 void ofApp::AudioSetup() {
 
 	ofSoundStreamSettings settings;
+<<<<<<< HEAD
 	settings.setApi(ofSoundDevice::Api::MS_ASIO);
+=======
+	settings.setApi(ofSoundDevice::Api::DEFAULT);
+>>>>>>> fad2dd9 (User interface)
 
 	// ------- SELECCIÓN DE DISPOSITIVO DE ENTRADA ------
 	ofSoundDevice device = ShowSelectAudioDeviceMenu();
 	settings.setInDevice(device);
+<<<<<<< HEAD
 	settings.setOutDevice(device);
+=======
+	//settings.setOutDevice(device);
+	// ----- SELECCIÓN DE DISPOSITIVO DE SALIDA ------
+	auto outDevices = soundStream.getMatchingDevices("Default");
+	if (!outDevices.empty()) {
+		settings.setOutDevice(outDevices[0]);
+	} else {
+		ofLogError() << "No se encontro dispositivo de entrada";
+	}
+>>>>>>> fad2dd9 (User interface)
 
 	settings.numOutputChannels = 2;
 	settings.numInputChannels = 1;
@@ -241,6 +580,9 @@ void ofApp::keyPressed(int key) {
 		playPosition = 0;
 		std::cout << "Playback stopped\n";
 	}
+	if (key == 'w') {
+		SaveToWav("ambisonics_WXYZ.wav");
+	}
 }
 
 //--------------------------------------------------------------
@@ -249,6 +591,14 @@ void ofApp::keyReleased(int key) {
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y) {
+	hoverPlay = btnPlay.inside(x, y);
+	hoverStop = btnStop.inside(x, y);
+	hoverRec = btnRec.inside(x, y);
+	hoverStopRec = btnStopRec.inside(x, y);
+	hoverPlayback = btnPlayback.inside(x, y);
+	hoverStopPlayback = btnStopPlayback.inside(x, y);
+
+	chkMonitorHover = chkMonitor.inside(x, y);
 }
 
 //--------------------------------------------------------------
@@ -257,10 +607,61 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
+
+	pressedPlay = btnPlay.inside(x, y);
+	pressedStop = btnStop.inside(x, y);
+	pressedRec = btnRec.inside(x, y);
+	pressedStopRec = btnStopRec.inside(x, y);
+	pressedPlayback = btnPlayback.inside(x, y);
+	pressedStopPlayback = btnStopPlayback.inside(x, y);
+
+	chkMonitorPressed = chkMonitor.inside(x, y);
+
+	// Toggle checkbox state when pressed
+	if (chkMonitorPressed) {
+		chkMonitorState = !chkMonitorState;
+		std::cout << "Monitor state: " << (chkMonitorState ? "ON" : "OFF") << std::endl;
+	}
+
+	if (pressedPlay) soundStream.start();
+	if (pressedStop) soundStream.stop();
+
+	if (pressedRec) {
+		recordBuffer.clear();
+		isRecording = true;
+		std::cout << "Recording started\n";
+	}
+
+	if (pressedStopRec) {
+		isRecording = false;
+		std::cout << "Recording stopped\n";
+	}
+
+	if (pressedPlayback) {
+		if (!recordBuffer.empty()) {
+			isPlaying = true;
+			playPosition = 0;
+			std::cout << "Playback started\n";
+		}
+	}
+
+	if (pressedStopPlayback) {
+		isPlaying = false;
+		playPosition = 0;
+		std::cout << "Playback stopped\n";
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
+	pressedPlay = false;
+	pressedStop = false;
+	pressedRec = false;
+	pressedStopRec = false;
+	pressedPlayback = false;
+	pressedStopPlayback = false;
+
+	chkMonitorPressed = false;
 }
 
 //--------------------------------------------------------------
@@ -332,4 +733,66 @@ void ofApp::DecodeToSpeakerArray(const std::vector<float> & W, const std::vector
 		
 		speakers[i]->SetBuffer(buffer);
 	}
+}
+
+bool ofApp::SaveToWav(const std::string & filePath) {
+	if (recordBuffer.empty()) {
+		std::cout << "Error: recordBuffer está vacío." << std::endl;
+		return false;
+	}
+
+	const uint32_t sampleRate = SAMPLERATE;
+	const uint16_t numChannels = 4; // W X Y Z
+	const uint16_t bitsPerSample = 32;
+	const uint16_t audioFormat = 3; // 3 = IEEE float
+
+	size_t numFrames = recordBuffer.size();
+
+	// --- Interleave WXYZ ---
+	std::vector<float> interleaved;
+	interleaved.reserve(numFrames * numChannels);
+
+	for (size_t i = 0; i < numFrames; i++) {
+		interleaved.push_back(recordBuffer[i].W);
+		interleaved.push_back(recordBuffer[i].X);
+		interleaved.push_back(recordBuffer[i].Y);
+		interleaved.push_back(recordBuffer[i].Z);
+	}
+
+	uint32_t dataSize = interleaved.size() * sizeof(float);
+	uint32_t chunkSize = 36 + dataSize;
+	uint32_t subchunk1Size = 16;
+	uint32_t byteRate = sampleRate * numChannels * sizeof(float);
+	uint16_t blockAlign = numChannels * sizeof(float);
+
+	std::ofstream out(filePath, std::ios::binary);
+	if (!out) {
+		std::cout << "No se pudo abrir el archivo WAV." << std::endl;
+		return false;
+	}
+
+	// RIFF HEADER
+	out.write("RIFF", 4);
+	out.write(reinterpret_cast<const char *>(&chunkSize), 4);
+	out.write("WAVE", 4);
+
+	// fmt chunk
+	out.write("fmt ", 4);
+	out.write(reinterpret_cast<const char *>(&subchunk1Size), 4);
+	out.write(reinterpret_cast<const char *>(&audioFormat), 2);
+	out.write(reinterpret_cast<const char *>(&numChannels), 2);
+	out.write(reinterpret_cast<const char *>(&sampleRate), 4);
+	out.write(reinterpret_cast<const char *>(&byteRate), 4);
+	out.write(reinterpret_cast<const char *>(&blockAlign), 2);
+	out.write(reinterpret_cast<const char *>(&bitsPerSample), 2);
+
+	// data chunk
+	out.write("data", 4);
+	out.write(reinterpret_cast<const char *>(&dataSize), 4);
+	out.write(reinterpret_cast<const char *>(interleaved.data()), dataSize);
+
+	out.close();
+	std::cout << "Archivo WAV guardado correctamente: " << filePath << std::endl;
+
+	return true;
 }
